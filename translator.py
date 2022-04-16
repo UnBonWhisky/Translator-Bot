@@ -67,6 +67,30 @@ async def on_guild_join(guild):
         )
     """)
 
+@client.event
+async def on_guild_remove(guild):
+    cursor.execute(f"SELECT default_language FROM default_guild_language WHERE guild_id = {ctx.guild.id}")
+    DefaultLG = cursor.fetchone()
+
+    if str(DefaultLG) == "None" or str(DefaultLG) == "(None,)":
+        pass
+
+    else :
+
+        cursor.execute(f"DELETE FROM default_guild_language WHERE guild_id = {ctx.guild.id}")
+        db.commit()
+    
+    cursor.execute(f"SELECT * FROM guild{ctx.guild.id}")
+    ischannelinlist = cursor.fetchall()
+
+    if str(ischannelinlist) == "None" or str(ischannelinlist) == "(None,)" :
+        pass
+
+    else :
+
+        cursor.execute(f"DELETE FROM guild{ctx.guild.id}")
+        db.commit()
+    
     
 @client.event
 async def on_command_error(ctx, error):
