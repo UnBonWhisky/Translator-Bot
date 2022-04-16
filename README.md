@@ -21,7 +21,7 @@ By using this bot, you agree to all of the rules above. In case of non-complianc
 
 * By typing a command from your bot, you accept that the bot collects your discord user ID and the server ID.
 * By using this bot, you accept that the bot sends you a message from the moderation team if we think it is a necessary case.
-* In case of you want to reset your datas, you have to send a screenshot of your "user profile" page, your user ID, and a real reason to erase them.
+* In case of you want to reset your datas, you have to send a screenshot of your "user profile" page, and your user ID.
 
 ---
 
