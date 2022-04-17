@@ -40,9 +40,6 @@ class SupportCommandSlash(commands.Cog):
             EmbedMessageSent.add_field(name = "Your message :",
                                     value = f"{message}",
                                     inline = False)
-            EmbedMessageSent.add_field(name="Other contact method",
-                                    value="mail : contact@unbonwhiskybots.xyz",
-                                    inline = False)
             
             EmbedSupportRequest = discord.Embed(title = "Support Required !",
                                                     description = f"**Ticket opened by :**\n``{ctx.author} / {ctx.author.id}``\n\n**Guild :**\n{ctx.guild.name} / {ctx.guild.id}\n\n**Date / Time of the message :**\n{infojour}",
