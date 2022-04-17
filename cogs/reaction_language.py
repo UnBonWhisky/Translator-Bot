@@ -106,7 +106,8 @@ class ReactionEventSlash(commands.Cog):
                 
                 if (str(DMOnOff) == "None") or (str(DMOnOff) == "(None,)") :
                     try:
-                        await self.client.get_user(payload.user_id).send(embed = EmbedTranslated)
+                        SendRequest = await self.client.fetch_user(payload.user_id)
+                        await SendRequest.send(embed = EmbedTranslated)
                     except discord.Forbidden:
                         await self.client.get_channel(payload.channel_id).send(embed = EmbedImpossibleSendDM)
                 else :
