@@ -20,7 +20,7 @@ from urllib.error import HTTPError
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-intents = discord.Intents(members=True, guilds=True, voice_states=True, presences=True, messages=True, reactions=True)
+intents = discord.Intents(guilds=True, voice_states=True, messages=True, reactions=True)
 
 TOKEN = ''
 
