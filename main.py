@@ -44,10 +44,8 @@ class ShardedBot(discord.AutoShardedBot):
     
     @tasks.loop(minutes=30)
     async def setup_translator(self):
-        proxies = [
-            "[PRIVATE]",
-        ]
-        self.trad = Translator(proxy=proxies)
+        proxy = "[PRIVATE]"
+        self.trad = Translator(proxy=proxy)
         print("=== Proxy Setup updated ! ===")
         
     async def create_tables(self):
