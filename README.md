@@ -11,7 +11,7 @@ If you hope this bot, you can vote for it on [TopGG Website](https://top.gg/bot/
 # Terms of Service
 
 * By using this bot, you accept that the bot collects your discord user ID and server ID the bot is in.
-* No insults, whether in DM or in the support server will be allowed.
+* No insults, whether in DM, in the support command or in the support server will be allowed.
 
 By using this bot, you agree to all of the rules above. In case of non-compliance with these rules, it is our right to ban you from using the bot, or banning you from using the server in an entire server.
 

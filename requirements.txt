@@ -1,0 +1,7 @@
+py-cord==2.5.0
+httpx[http2]
+httpcore
+git+https://github.com/UnBonWhisky/googletrans.git
+python-dotenv
+aiosqlite
+httpx-socks[asyncio]
