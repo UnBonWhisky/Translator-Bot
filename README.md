@@ -1,10 +1,15 @@
 # Translator-Bot
 
+![Github Stars](https://img.shields.io/github/stars/unbonwhisky/Translator-Bot)
+
 Here you can find a personnal project I made and actually self-host. It is my own discord bot, made with pycord, custom version of googletrans, and aiosqlite.
 
 This project is licensed under the GNU General Public License v3.0 (GPLv3). This means you are free to modify, distribute, and use the software, even commercially, as long as any modifications and derived works are also licensed under the GPLv3. This ensures that all modifications remain open source. Please note that you must disclose all source code changes and contribute them back to the community under the same GPL v3 license.
 
-If you hope this bot, you can vote for it on [TopGG Website](https://top.gg/bot/815328232537718794)
+If you hope this bot, you can join me on one of these platforms :  
+[![Discord logo](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/gqfFqJp) 
+[![Patreon logo](https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/JeSuisUnBonWhisky) 
+[![BuyMeACoffee logo](https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/unbonwhisky)
 
 ---
 
