@@ -1,10 +1,9 @@
-from discord import Embed, option, ApplicationContext, Permissions, AutocompleteContext
+from discord import Embed, option, ApplicationContext, Permissions, AutocompleteContext, InteractionContextType
 from discord.commands import SlashCommandGroup
 from discord.ext.commands import Cog
-from discord.utils import basic_autocomplete
-import aiosqlite
+from googletrans import LANGNAMES
 
-LANGUAGES = ['afrikaans','albanian','amharic','arabic','armenian','azerbaijani','basque','belarusian','bengali','bosnian','bulgarian','catalan','cebuano','chichewa','chinese (simplified)','chinese (traditional)','corsican','croatian','czech','danish','dutch','english','esperanto','estonian','filipino','finnish','french','frisian','galician','georgian','german','greek','gujarati','haitian creole','hausa','hawaiian','hebrew','hebrew','hindi','hmong','hungarian','icelandic','igbo','indonesian','irish','italian','japanese','javanese','kannada','kazakh','khmer','korean','kurdish (kurmanji)','kyrgyz','lao','latin','latvian','lithuanian','luxembourgish','macedonian','malagasy','malay','malayalam','maltese','maori','marathi','mongolian','myanmar (burmese)','nepali','norwegian','odia','pashto','persian','polish','portuguese','punjabi','romanian','russian','samoan','scots gaelic','serbian','sesotho','shona','sindhi','sinhala','slovak','slovenian','somali','spanish','sundanese','swahili','swedish','tajik','tamil','telugu','thai','turkish','ukrainian','urdu','uyghur','uzbek','vietnamese','welsh','xhosa','yiddish','yoruba','zulu']
+LANGUAGES = LANGNAMES
 
 class DefaultLanguage(Cog):
     def __init__(self, bot):
@@ -13,7 +12,7 @@ class DefaultLanguage(Cog):
     defaultlanguage = SlashCommandGroup(
         name="defaultlanguage", 
         description="Commands used to set or remove a default language for the server.",
-        guild_only=True,
+        contexts={InteractionContextType.guild},
         default_member_permissions=Permissions(administrator=True)
     )
     

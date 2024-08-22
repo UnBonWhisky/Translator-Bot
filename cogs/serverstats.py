@@ -1,6 +1,5 @@
-from discord import slash_command, ApplicationContext, Embed
+from discord import slash_command, ApplicationContext, Embed, InteractionContextType
 from discord.ext.commands import Cog
-import aiosqlite
 
 class ServerStats(Cog):
     def __init__(self, bot):
@@ -8,7 +7,8 @@ class ServerStats(Cog):
     
     @slash_command(
         name="serverstats",
-        description="Prints all configured informations on the server"
+        description="Prints all configured informations on the server",
+        contexts={InteractionContextType.guild}
     )
     async def serverstats(self, ctx: ApplicationContext):
         

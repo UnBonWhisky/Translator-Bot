@@ -53,5 +53,4 @@ The `/allowflag` command provide some options you can use to edit the comportmen
 
 ## Is it possible to have the translation of a message but in another channel ?
 
-~~Actually no. I will work on this feature but it is not actually available on the bot.~~  
 Sure you can ! As of August 7th 2024, the `/linkchannels` command have been added to the bot

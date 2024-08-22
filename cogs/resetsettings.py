@@ -1,4 +1,4 @@
-from discord import Embed, ApplicationContext, slash_command, default_permissions, ButtonStyle, Interaction
+from discord import Embed, ApplicationContext, slash_command, default_permissions, ButtonStyle, Interaction, InteractionContextType
 from discord.ext.commands import Cog
 from discord.ui import Button, View, button
 import asyncio, aiosqlite
@@ -29,7 +29,7 @@ class ResetSettings(Cog):
     @slash_command(
         name="resetsettings",
         description="Erase all datas including channel languages and default language",
-        guild_only=True
+        contexts={InteractionContextType.guild}
     )
     @default_permissions(administrator=True)
     async def resetsettings(self, ctx : ApplicationContext):

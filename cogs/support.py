@@ -1,5 +1,5 @@
 import time
-from discord import Embed, ApplicationContext, option, default_permissions
+from discord import Embed, ApplicationContext, option, default_permissions, InteractionContextType
 from discord.ext.commands import slash_command, Cog
 
 class SupportCommand(Cog):
@@ -9,7 +9,7 @@ class SupportCommand(Cog):
     @slash_command(
         name ="support",
         description = "Need help about anything on the bot ? Join the support server.",
-        guild_only=True
+        contexts={InteractionContextType.guild}
     )
     @option(
         name="message",

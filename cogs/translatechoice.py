@@ -1,5 +1,4 @@
-import aiosqlite
-from discord import Embed, ApplicationContext, slash_command, option
+from discord import Embed, ApplicationContext, slash_command, option, InteractionContextType
 from discord.ext.commands import Cog
 
 class TranslateChoice(Cog):
@@ -9,7 +8,7 @@ class TranslateChoice(Cog):
     @slash_command(
         name ="translatechoice",
         description = "Used to choose where you want your reaction translations.",
-        guild_only=True
+        contexts={InteractionContextType.guild}
     )
     @option(
         name="choice",

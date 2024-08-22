@@ -1,14 +1,13 @@
 from discord import Embed, errors
 from discord.ext.commands import Cog
-import aiosqlite
-from googletrans import Translator
 
 class ReactionEvent(Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.reactionflag = ['🇦🇸','🇦🇨','🇦🇩','🇦🇪','🇦🇬','🇦🇮','🇦🇱','🇦🇲','🇦🇴','🇦🇶','🇦🇷','🇦🇹','🇦🇺','🇦🇼','🇦🇽','🇦🇿','🇧🇸','🇧🇦','🇧🇧','🇧🇩','🇧🇪','🇧🇫','🇧🇬','🇧🇭','🇧🇮','🇧🇯','🇧🇱','🇧🇲','🇧🇳','🇧🇴','🇧🇶','🇧🇷','🇧🇹','🇧🇻','🇧🇼','🇧🇾','🇧🇿','🇨🇦','🇨🇨','🇨🇩','🇨🇫','🇨🇬','🇨🇭','🇨🇮','🇨🇰','🇨🇱','🇨🇲','🇨🇳','🇨🇴','🇨🇵','🇨🇷','🇨🇺','🇨🇻','🇨🇼','🇨🇽','🇨🇾','🇨🇿','🇩🇪','🇩🇬','🇩🇯','🇩🇰','🇩🇲','🇩🇴','🇩🇿','🇪🇦','🇪🇨','🇪🇪','🇪🇬','🇪🇭','🇪🇷','🇪🇸','🇪🇹','🇪🇺','🇫🇮','🇫🇯','🇫🇰','🇫🇲','🇫🇴','🇫🇷','🇬🇦','🇬🇧','🇬🇩',' 🇬🇪','🇬🇫','🇬🇬','🇬🇭','🇬🇮','🇬🇱','🇬🇲','🇬🇳','🇬🇵','🇬🇶','🇬🇷','🇬🇸','🇬🇹','🇬🇺','🇬🇼','🇬🇾','🇭🇰',' 🇭🇲','🇭🇳','🇭🇷','🇭🇹','🇭🇺','🇮🇨','🇮🇩','🇮🇪','🇮🇱','🇮🇲','🇮🇳','🇮🇴','🇮🇶','🇮🇷','🇮🇸','🇮🇹','🇯🇪',' 🇯🇲','🇯🇴','🇯🇵','🇰🇪','🇰🇬','🇰🇭','🇰🇮','🇰🇲','🇰🇳','🇰🇵','🇰🇷','🇰🇼','🇰🇾','🇰🇿','🇱🇦','🇱🇧','🇱🇨',' 🇱🇮','🇱🇰','🇱🇷','🇱🇸','🇱🇹','🇱🇺','🇱🇻','🇱🇾','🇲🇦','🇲🇨','🇲🇩','🇲🇪','🇲🇫','🇲🇬','🇲🇭','🇲🇰','🇲🇱',' 🇲🇲','🇲🇳','🇲🇴','🇲🇵','🇲🇶','🇲🇷','🇲🇸','🇲🇹','🇲🇺','🇲🇻','🇲🇼','🇲🇽','🇲🇾','🇲🇿','🇳🇦','🇳🇨','🇳🇪',' 🇳🇫','🇳🇬','🇳🇮','🇳🇱','🇳🇴','🇳🇵','🇳🇷','🇳🇺','🇳🇿','🇴🇲','🇵🇦','🇵🇪','🇵🇫','🇵🇬','🇵🇭','🇵🇰','🇵🇱',' 🇵🇲','🇵🇳','🇵🇷','🇵🇸','🇵🇹','🇵🇼','🇵🇾','🇶🇦','🇷🇪','🇷🇴','🇷🇸','🇷🇺','🇷🇼','🇸🇦','🇸🇧','🇸🇨','🇸🇩',' 🇸🇪','🇸🇬','🇸🇭','🇸🇮','🇸🇯','🇸🇰','🇸🇱','🇸🇲','🇸🇳','🇸🇴','🇸🇷','🇸🇸','🇸🇹','🇸🇻','🇸🇽','🇸🇾','🇸🇿',' 🇹🇦','🇹🇨','🇹🇩','🇹🇫','🇹🇬','🇹🇭','🇹🇯','🇹🇰','🇹🇱','🇹🇲','🇹🇳','🇹🇴','🇹🇷','🇹🇹','🇹🇻','🇹🇼','🇹🇿',' 🇺🇦','🇺🇬','🇺🇲','🇺🇳','🇺🇸','🇺🇾','🇺🇿','🇻🇦','🇻🇨','🇻🇪','🇻🇬','🇻🇮','🇻🇳','🇻🇺','🇼🇫','🇼🇸','🇽🇰',' 🇾🇪','🇾🇹','🇿🇦','🇿🇲','🇿🇼','🇺🇦','🇸🇪','🏴󠁧󠁢󠁥󠁮󠁧󠁿','🏴󠁧󠁢󠁷󠁬󠁳󠁿']
-        self.destinationflag = ['sm','en','ca','ar','en','en','sq','hy','pt','en','es','de','en','nl','sv','az','en','bs','en','bn','fr','fr','bg','ar','fr','fr','fr','en','ms','es','nl','pt','ne','is','en','be','en','en','en','fr','fr','fr','de','fr','mi','es','fr','zh-cn','es','fr','es','es','pt','nl','zh-cn','el','cs','de','en','fr','da','en','es','ar','es','es','et','ar','ar','en','es','am','en','fi','hi','en','en','da','fr','fr','en','en','ka','fr','en','en','en','en','en','fr','fr','fr','el','en','es','en','pt','en','zh-cn','en','es','hr','ht','hu','es','id','ga','iw','en','hi','en','ku','fa','is','it','en','en','ar','ja','sw','ky','km','en','fr','en','ko','ko','ar','en','kk','lo','ar','en','ge','ta','en','en','lt','lb','lv','ar','ar','fr','ro','en','fr','mg','en','mk','fr','my','mn','zh-cn','en','fr','ar','en','mt','en','en','en','es','ms','pt','en','fr','fr','en','en','es','nl','no','ne','en','en','mi','ar','es','es','fr','en','tl','en','pl','fr','en','es','ar','pt','en','es','ar','fr','ro','sr','ru','en','ar','en','fr','ar','sv','ms','en','sl','nl','sk','en','it','fr','so','nl','en','pt','es','nl','ar','en','en','en','fr','fr','fr','th','tg','en','pt','en','ar','en','tr','en','en','zh-cn','sw','uk','sw','en','en','en','es','uz','it','en','es','en','en','vi','fr','fr','sm','sq','ar','fr','af','en','sn','uk','sv','en','cy']
-        
+        self.bot.LANGUAGES['none'] = 'none'
+        self.bot.LANGUAGES['None'] = 'none'
+        self.bot.LANGCODES['none'] = 'none'
+
     ########################################################
     # Fonction pour créer un embed avec des champs divisés #
     ########################################################
@@ -104,9 +103,10 @@ class ReactionEvent(Cog):
         else :
             timeout = int(timeout[0])
 
-        if payload.emoji.name in self.reactionflag:
+        if payload.emoji.name in self.bot.FLAG_CODES.keys() :
 
-            source = self.destinationflag[self.reactionflag.index(payload.emoji.name)]
+            #source = self.destinationflag[self.reactionflag.index(payload.emoji.name)]
+            source = self.bot.FLAG_CODES[payload.emoji.name]
 
             TranslateMessage = self.bot.get_message(payload.message_id)
             if TranslateMessage is None:
@@ -126,6 +126,17 @@ class ReactionEvent(Cog):
                 except :
                     await cursor.close()
                     return
+            
+            if Traduction.src == "auto" :
+                try :
+                    temp_lo = await self.bot.trad.detect(TranslateMessage.content)
+                    langue_originale = temp_lo.lang
+                except :
+                    temp_lo = await self.bot.trad.detect_legacy(TranslateMessage.content)
+                    langue_originale = temp_lo.lang
+                
+                if langue_originale != "auto" :
+                    Traduction.src = langue_originale
 
             EmbedImpossibleSendDM = Embed(
                 description = "You must to open your DM's to allow me to send you the translate you asked for",
@@ -178,9 +189,6 @@ class ReactionEvent(Cog):
 
             else:
 
-                LANGUAGES = [None, 'None', 'none','afrikaans','albanian','amharic','arabic','armenian','azerbaijani','basque','belarusian','bengali','bosnian','bulgarian','catalan','cebuano','chichewa','chinese (simplified)','chinese (traditional)','corsican','croatian','czech','danish','dutch','english','esperanto','estonian','filipino','finnish','french','frisian','galician','georgian','german','greek','gujarati','haitian creole','hausa','hawaiian','hebrew','hebrew','hindi','hmong','hungarian','icelandic','igbo','indonesian','irish','italian','japanese','javanese','kannada','kazakh','khmer','korean','kurdish (kurmanji)','kyrgyz','lao','latin','latvian','lithuanian','luxembourgish','macedonian','malagasy','malay','malayalam','maltese','maori','marathi','mongolian','myanmar (burmese)','nepali','norwegian','odia','pashto','persian','polish','portuguese','punjabi','romanian','russian','samoan','scots gaelic','serbian','sesotho','shona','sindhi','sinhala','slovak','slovenian','somali','spanish','sundanese','swahili','swedish','tajik','tamil','telugu','thai','turkish','ukrainian','urdu','uyghur','uzbek','vietnamese','welsh','xhosa','yiddish','yoruba','zulu']
-                LANGUAGESEXT = ['none', 'none', 'none','af','sq','am','ar','hy','az','eu','be','bn','bs','bg','ca','ceb','ny','zh-cn','zh-tw','co','hr','cs','da','nl','en','eo','et','tl','fi','fr','fy','gl','ka','de','el','gu','ht','ha','haw','iw','he','hi','hmn','hu','is','ig','id','ga','it','ja','jw','kn','kk','km','ko','ku','ky','lo','la','lv','lt','lb','mk','mg','ms','ml','mt','mi','mr','mn','my','ne','no','or','ps','fa','pl','pt','pa','ro','ru','sm','gd','sr','st','sn','sd','si','sk','sl','so','es','su','sw','sv','tg','ta','te','th','tr','uk','ur','ug','uz','vi','cy','xh','yi','yo','zu']
-
                 await cursor.execute(f"SELECT info FROM langinfo WHERE guild_id = {payload.guild_id}")
                 langinfo = await cursor.fetchone()
                 if str(langinfo) != "None" :
@@ -193,8 +201,8 @@ class ReactionEvent(Cog):
                         pass
 
                     if langinfo == "enabled" :
-                        flag = LANGUAGES[LANGUAGESEXT.index(Traduction.src.lower())]
-                        Traduction.text = f"`{flag.lower()}` {Traduction.text}"
+                        flag = self.bot.LANGUAGES[Traduction.src] if Traduction.src != "auto" else "not found"
+                        Traduction.text = f"`{flag}` {Traduction.text}"
 
                     if len(Traduction.text) > 2000 :
                         parts = await self.split_message_into_parts(Traduction.text)
@@ -218,7 +226,7 @@ class ReactionEvent(Cog):
                 )
 
                 if str(langinfo) != "None" :
-                    EmbedTranslated.description = f"Original message language : {LANGUAGES[LANGUAGESEXT.index(Traduction.src.lower())]}"
+                    EmbedTranslated.description = f"Original message language : {self.bot.LANGUAGES[Traduction.src] if Traduction.src != 'auto' else 'not found'}"
 
                 Embeds = [EmbedTranslated]
                 content = await self.create_embed_with_fields(TranslateMessage.content, "**Original Message :**")

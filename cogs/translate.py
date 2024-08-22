@@ -1,9 +1,8 @@
-from discord import slash_command, ApplicationContext, AutocompleteContext, option
+from discord import slash_command, ApplicationContext, AutocompleteContext, option, AutoModActionType, Embed, InteractionContextType, IntegrationType
 from discord.ext.commands import Cog
-from discord.utils import basic_autocomplete
-from googletrans import Translator
-
-LANGUAGES = ['afrikaans','albanian','amharic','arabic','armenian','azerbaijani','basque','belarusian','bengali','bosnian','bulgarian','catalan','cebuano','chichewa','chinese (simplified)','chinese (traditional)','corsican','croatian','czech','danish','dutch','english','esperanto','estonian','filipino','finnish','french','frisian','galician','georgian','german','greek','gujarati','haitian creole','hausa','hawaiian','hebrew','hebrew','hindi','hmong','hungarian','icelandic','igbo','indonesian','irish','italian','japanese','javanese','kannada','kazakh','khmer','korean','kurdish (kurmanji)','kyrgyz','lao','latin','latvian','lithuanian','luxembourgish','macedonian','malagasy','malay','malayalam','maltese','maori','marathi','mongolian','myanmar (burmese)','nepali','norwegian','odia','pashto','persian','polish','portuguese','punjabi','romanian','russian','samoan','scots gaelic','serbian','sesotho','shona','sindhi','sinhala','slovak','slovenian','somali','spanish','sundanese','swahili','swedish','tajik','tamil','telugu','thai','turkish','ukrainian','urdu','uyghur','uzbek','vietnamese','welsh','xhosa','yiddish','yoruba','zulu']
+from googletrans import LANGNAMES
+from fnmatch import fnmatch
+import flpc
 
 class Translate(Cog):
     def __init__(self, bot):
@@ -14,7 +13,7 @@ class Translate(Cog):
     #########################
 
     async def get_languages(ctx: AutocompleteContext):
-        filtered_languages = [lang for lang in LANGUAGES if lang.startswith(ctx.value.lower())]
+        filtered_languages = [lang for lang in LANGNAMES if lang.startswith(ctx.value.lower())]
         if len(filtered_languages) > 25:
             return filtered_languages[:25]
         else:
@@ -47,7 +46,15 @@ class Translate(Cog):
     @slash_command(
         name="translate",
         description="Translate a text from a language to another.",
-        guild_only=True
+        contexts = {
+            InteractionContextType.guild,
+            InteractionContextType.private_channel,
+            InteractionContextType.bot_dm,
+        },
+        integration_types = {
+            IntegrationType.guild_install,
+            IntegrationType.user_install,
+        }
     )
     @option(
         name="text",
@@ -80,26 +87,89 @@ class Translate(Cog):
         await ctx.defer(ephemeral=ephemeral)
         
         try :
-            traduction = await self.bot.trad.translate(text, dest=to_language, src=from_language)
+            Traduction = await self.bot.trad.translate(text, dest=to_language, src=from_language)
         except :
             try :
-                traduction = await self.bot.trad.translate_to_detect(text, dest=to_language, src=from_language)
+                Traduction = await self.bot.trad.translate_to_detect(text, dest=to_language, src=from_language)
             except :
-                await ctx.respond("An error occured while translating the text.\nPlease try again.", ephemeral=True)
+                await ctx.respond("An error occured while translating the text.\nPlease try again.", ephemeral=ephemeral, delete_after=3 if not ephemeral else None)
                 return
+            
+        if ctx.interaction.context == InteractionContextType.guild :
+            try :
+                if ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_guild :
+                    raise Exception
+                
+                automod_rules = await ctx.guild.fetch_auto_moderation_rules()
+                ban_word = False
+                
+                for rule in automod_rules:
+                    if any(role.id in rule.exempt_role_ids for role in ctx.author.roles) or (ctx.channel.id in rule.exempt_channel_ids) :
+                        continue
+                
+                    if (type(rule.trigger_metadata.keyword_filter) == list) and (any(AutoModActionType.block_message == action.type for action in rule.actions)) and (not ban_word) :
+                        for keyword in rule.trigger_metadata.keyword_filter :
+                            if fnmatch(Traduction.text, keyword) :
+                                ban_word = True
+                                
+                    if (type(rule.trigger_metadata.regex_patterns) == list) and (not ban_word) :
+                        for keyword in rule.trigger_metadata.regex_patterns :
+                            pattern = flpc.compile(keyword)
+                            if flpc.fmatch(pattern, Traduction.text) :
+                                ban_word = True
+
+                    if (type(rule.trigger_metadata.allow_list) == list) and (ban_word) :
+                        for keyword in rule.trigger_metadata.allow_list :
+                            if fnmatch(Traduction.text, keyword) :
+                                ban_word = False
+                                continue
+                
+                    if ban_word :
+                        await ctx.respond("An automod rule have been set up to ban a word you have in the translation.", ephemeral=ephemeral, delete_after=3 if not ephemeral else None)
+                        
+                        for action in rule.actions :
+                            if AutoModActionType.send_alert_message == action.type :
+                                alert_channel = await self.bot.fetch_channel(action.metadata.channel_id)
+                                
+                                EmbedAlert = Embed(title = rule.name,
+                                    description = f"<@{ctx.author.id}> raised an automod alert when trying to do a translation.",
+                                    color = 0xff0000
+                                )
+                                EmbedOriginal = Embed(title = "Original message",
+                                    description = f"{text}",
+                                    color = 0xff0000
+                                )
+                                EmbedTraduction = Embed(title = "Translated message",
+                                    description = f"{Traduction.text}",
+                                    color = 0xff0000
+                                )
+                                
+                                await alert_channel.send(embeds = [EmbedAlert, EmbedOriginal, EmbedTraduction])
+                        return
+            except :
+                pass
         
-        if len(traduction.text) > 2000:
+        if len(Traduction.text) > 2000:
             if ephemeral:
                 await ctx.respond("The translated text is too long to be sent in one message.\nEphemeral message is not available for long text.", ephemeral=ephemeral)
-            parts = await self.split_message_into_parts(traduction.text)
+            parts = await self.split_message_into_parts(Traduction.text)
             for x in range(len(parts)):
                 if x == 0 and not ephemeral:
                     await ctx.respond(parts[x])
                 else :
-                    await ctx.send(parts[x])    
+                    await ctx.send(parts[x])
+        
+        elif len(Traduction.text) == 0:
+            await ctx.respond("The translated text is empty.\nI can not translate this.\nIf you think this is not the normal comportment, please open a ticket in the support server", ephemeral=ephemeral)
         
         else :
-            await ctx.respond(f"{traduction.text}", ephemeral=ephemeral)
+            try :
+                await ctx.respond(f"{Traduction.text}", ephemeral=ephemeral)
+            except Exception as e :
+                if "Message was blocked by AutoMod" in str(e) :
+                    await ctx.respond("The content of the translated has been blocked by Automod.", ephemeral=ephemeral, delete_after=3 if not ephemeral else None)
+                else :
+                    pass
 
 
 def setup(bot):

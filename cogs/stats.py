@@ -1,5 +1,5 @@
 import discord
-from discord import Embed, ApplicationContext
+from discord import Embed, ApplicationContext, InteractionContextType
 from discord.ext.commands import slash_command, Cog
 from datetime import datetime
 
@@ -10,7 +10,7 @@ class StatsCommand(Cog):
     @slash_command(
         name="stats",
         description="Display the stats of the bot.",
-        guild_only=True
+        contexts={InteractionContextType.guild}
     )
     async def stats(self, ctx: ApplicationContext):
         

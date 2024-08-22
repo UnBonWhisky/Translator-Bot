@@ -1,11 +1,8 @@
-from discord import Embed, option, ApplicationContext, ChannelType, Permissions, AutocompleteContext
+from discord import Embed, option, ApplicationContext, ChannelType, Permissions, AutocompleteContext, InteractionContextType
 from discord.abc import GuildChannel
 from discord.commands import SlashCommandGroup
 from discord.ext.commands import Cog
-from discord.utils import basic_autocomplete
-import aiosqlite
-
-LANGUAGES = ['afrikaans','albanian','amharic','arabic','armenian','azerbaijani','basque','belarusian','bengali','bosnian','bulgarian','catalan','cebuano','chichewa','chinese (simplified)','chinese (traditional)','corsican','croatian','czech','danish','dutch','english','esperanto','estonian','filipino','finnish','french','frisian','galician','georgian','german','greek','gujarati','haitian creole','hausa','hawaiian','hebrew','hebrew','hindi','hmong','hungarian','icelandic','igbo','indonesian','irish','italian','japanese','javanese','kannada','kazakh','khmer','korean','kurdish (kurmanji)','kyrgyz','lao','latin','latvian','lithuanian','luxembourgish','macedonian','malagasy','malay','malayalam','maltese','maori','marathi','mongolian','myanmar (burmese)','nepali','norwegian','odia','pashto','persian','polish','portuguese','punjabi','romanian','russian','samoan','scots gaelic','serbian','sesotho','shona','sindhi','sinhala','slovak','slovenian','somali','spanish','sundanese','swahili','swedish','tajik','tamil','telugu','thai','turkish','ukrainian','urdu','uyghur','uzbek','vietnamese','welsh','xhosa','yiddish','yoruba','zulu']
+from googletrans import LANGNAMES
 
 class ReverseLanguages(Cog):
     def __init__(self, bot):
@@ -14,7 +11,7 @@ class ReverseLanguages(Cog):
     reverse = SlashCommandGroup(
         name="reverse", 
         description="Commands used to set a reversed translation between two languages.",
-        guild_only=True,
+        contexts={InteractionContextType.guild},
         default_member_permissions=Permissions(administrator=True)
     )
     
@@ -24,7 +21,7 @@ class ReverseLanguages(Cog):
     #########################
 
     async def get_languages(ctx: AutocompleteContext):
-        filtered_languages = [lang for lang in LANGUAGES if lang.startswith(ctx.value.lower())]
+        filtered_languages = [lang for lang in LANGNAMES if lang.startswith(ctx.value.lower())]
         if len(filtered_languages) > 25:
             return filtered_languages[:25]
         else:
@@ -80,7 +77,7 @@ class ReverseLanguages(Cog):
                 color = 0xFF0000
             )
         
-        elif (language_1 not in LANGUAGES) or (language_2 not in LANGUAGES) :
+        elif (language_1 not in LANGNAMES) or (language_2 not in LANGNAMES) :
 
             EmbedMessage = Embed(
                 description = "One or both of the languages you entered are not available. Please refer to the language list using `/languagelist` command.",

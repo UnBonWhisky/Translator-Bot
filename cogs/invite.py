@@ -1,4 +1,4 @@
-from discord import Embed, ApplicationContext
+from discord import Embed, ApplicationContext, InteractionContextType
 from discord.ext.commands import slash_command, Cog
 
 class InviteCommand(Cog):
@@ -8,7 +8,7 @@ class InviteCommand(Cog):
     @slash_command(
         name = "invite",
         description = "Anything you need to know if you want me on your server",
-        guild_only=True
+        contexts={InteractionContextType.guild}
     )
     async def invite(self, ctx : ApplicationContext):
         
@@ -27,11 +27,8 @@ class InviteCommand(Cog):
 
         # Fields :
         embed.add_field(name = "Add me to your server",
-                        value = "[Click here to invite me \non your server](https://discord.com/oauth2/authorize?client_id=815328232537718794&permissions=1102128966768&scope=applications.commands+bot)",
-                        inline = True)
-        embed.add_field(name = "Vote me please",
-                        value = "[You can vote me up on top.gg by \nclicking on this link](https://top.gg/bot/815328232537718794/vote)",
-                        inline = True)
+                        value = "[Click here to invite me on your server or to install me to your profile](https://discord.com/oauth2/authorize?client_id=815328232537718794)",
+                        inline = False)
 
         await ctx.respond(embed = embed, ephemeral=True)
 

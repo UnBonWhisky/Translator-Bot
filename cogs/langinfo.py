@@ -1,6 +1,5 @@
-from discord import Embed, option, ApplicationContext, default_permissions
+from discord import Embed, option, ApplicationContext, InteractionContextType
 from discord.ext.commands import slash_command, Cog
-import aiosqlite
 
 class LangInfo(Cog):
     def __init__(self, bot):
@@ -8,7 +7,8 @@ class LangInfo(Cog):
     
     @slash_command(
         name="langinfo",
-        description="Get the informations from which language the original message come from."
+        description="Get the informations from which language the original message come from.",
+        contexts={InteractionContextType.guild}
     )
     @option(
         name="enabled",

@@ -1,4 +1,4 @@
-from discord import Embed, ApplicationContext
+from discord import Embed, ApplicationContext, InteractionContextType
 from discord.ext.commands import Cog, slash_command
 
 class DonationCommand(Cog):
@@ -8,7 +8,7 @@ class DonationCommand(Cog):
     @slash_command(
         name = "donation",
         description = "If you want to thank me for my work :)",
-        guild_only=True
+        contexts={InteractionContextType.guild}
     )
     async def donation(self, ctx : ApplicationContext):
         

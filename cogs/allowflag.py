@@ -1,6 +1,5 @@
-from discord import Embed, option, ApplicationContext, default_permissions
+from discord import Embed, option, ApplicationContext, default_permissions, InteractionContextType
 from discord.ext.commands import slash_command, Cog
-import aiosqlite
 
 class ReactionFlag(Cog):
     def __init__(self, bot):
@@ -9,7 +8,7 @@ class ReactionFlag(Cog):
     @slash_command(
         name ="allowflag",
         description = "Command for servers admins. Used to allow or not reactions flag on the server.",
-        guild_only=True
+        contexts={InteractionContextType.guild}
     )
     @option(
         name="allowed",

@@ -1,9 +1,9 @@
-import discord, aiosqlite, os, json, httpx
+import discord, aiosqlite, os, json, httpx, random
 from discord import Intents
 from discord.ext import tasks
 from dotenv import load_dotenv
 from datetime import datetime
-from googletrans import Translator
+from googletrans import Translator, LANGUAGES, FLAG_CODES, LANGKEYS, LANGNAMES, LANGCODES
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -12,7 +12,7 @@ load_dotenv()
 TOKEN = os.getenv('BOT_TOKEN')
 
 # Création du Httpx client
-HTTPClient = httpx.AsyncClient()
+client = httpx.AsyncClient()
 
 class ShardedBot(discord.AutoShardedBot):
     def __init__(self, *args, **kwargs):
@@ -21,6 +21,11 @@ class ShardedBot(discord.AutoShardedBot):
         self.cursor = None
         self.trad = None
         self.setup_translator.start()
+        self.LANGUAGES = LANGUAGES
+        self.FLAG_CODES = FLAG_CODES
+        self.LANG_KEYS = LANGKEYS
+        self.LANG_NAMES = LANGNAMES
+        self.LANGCODES = LANGCODES
     
     async def start(self, token: str, *, reconnect: bool = True):
         await self.setup_database()
@@ -44,7 +49,9 @@ class ShardedBot(discord.AutoShardedBot):
     
     @tasks.loop(minutes=30)
     async def setup_translator(self):
-        proxy = "[PRIVATE]"
+        
+        proxy="[PRIVATE]"
+        
         self.trad = Translator(proxy=proxy)
         print("=== Proxy Setup updated ! ===")
         
@@ -91,7 +98,9 @@ class ShardedBot(discord.AutoShardedBot):
             channel_id_1 TEXT,
             channel_id_2 TEXT,
             language_1 TEXT,
-            language_2 TEXT
+            language_2 TEXT,
+            webhook_1 TEXT,
+            webhook_2 TEXT
             )
         """)
         await self.cursor.execute("""
@@ -146,7 +155,7 @@ async def on_guild_join(guild):
         'user-agent': 'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'
     }
 
-    await HTTPClient.post(url=WEBHOOK_URL,
+    await client.post(url=WEBHOOK_URL,
         data=json.dumps(payload).encode('utf-8'),
         headers=headers
     )
@@ -190,7 +199,7 @@ async def on_guild_remove(guild):
         'user-agent': 'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'
     }
 
-    await HTTPClient.post(url=WEBHOOK_URL,
+    await client.post(url=WEBHOOK_URL,
         data=json.dumps(payload).encode('utf-8'),
         headers=headers
     )

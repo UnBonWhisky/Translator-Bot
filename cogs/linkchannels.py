@@ -1,11 +1,8 @@
-from discord import Embed, option, ApplicationContext, ChannelType, Permissions, AutocompleteContext
+from discord import Embed, option, ApplicationContext, ChannelType, Permissions, AutocompleteContext, InteractionContextType
 from discord.abc import GuildChannel
 from discord.commands import SlashCommandGroup
 from discord.ext.commands import Cog
-from discord.utils import basic_autocomplete
-import aiosqlite
-
-LANGUAGES = ['afrikaans','albanian','amharic','arabic','armenian','azerbaijani','basque','belarusian','bengali','bosnian','bulgarian','catalan','cebuano','chichewa','chinese (simplified)','chinese (traditional)','corsican','croatian','czech','danish','dutch','english','esperanto','estonian','filipino','finnish','french','frisian','galician','georgian','german','greek','gujarati','haitian creole','hausa','hawaiian','hebrew','hebrew','hindi','hmong','hungarian','icelandic','igbo','indonesian','irish','italian','japanese','javanese','kannada','kazakh','khmer','korean','kurdish (kurmanji)','kyrgyz','lao','latin','latvian','lithuanian','luxembourgish','macedonian','malagasy','malay','malayalam','maltese','maori','marathi','mongolian','myanmar (burmese)','nepali','norwegian','odia','pashto','persian','polish','portuguese','punjabi','romanian','russian','samoan','scots gaelic','serbian','sesotho','shona','sindhi','sinhala','slovak','slovenian','somali','spanish','sundanese','swahili','swedish','tajik','tamil','telugu','thai','turkish','ukrainian','urdu','uyghur','uzbek','vietnamese','welsh','xhosa','yiddish','yoruba','zulu']
+from googletrans import LANGNAMES
 
 class LinkChannels(Cog):
     def __init__(self, bot):
@@ -14,7 +11,7 @@ class LinkChannels(Cog):
     linkchannels = SlashCommandGroup(
         name="linkchannels", 
         description="Commands used to set a linked translation between 2 channels.",
-        guild_only=True,
+        contexts={InteractionContextType.guild},
         default_member_permissions=Permissions(administrator=True)
     )
     
@@ -24,7 +21,7 @@ class LinkChannels(Cog):
     #########################
 
     async def get_languages(ctx: AutocompleteContext):
-        filtered_languages = [lang for lang in LANGUAGES if lang.startswith(ctx.value.lower())]
+        filtered_languages = [lang for lang in LANGNAMES if lang.startswith(ctx.value.lower())]
         if len(filtered_languages) > 25:
             return filtered_languages[:25]
         else:
@@ -100,7 +97,7 @@ class LinkChannels(Cog):
                 color = 0xFF0000
             )
         
-        elif (language_1 not in LANGUAGES) or (language_2 not in LANGUAGES) :
+        elif (language_1 not in LANGNAMES) or (language_2 not in LANGNAMES) :
 
             EmbedMessage = Embed(
                 description = "One or both of the languages you entered are not available. Please refer to the language list using `/languagelist` command.",
@@ -120,13 +117,16 @@ class LinkChannels(Cog):
                 await ctx.respond(embed = EmbedMessage, ephemeral=True)
                 return
 
+            webhook_1 = await channel_1.create_webhook(name="Translator Bot")
+            webhook_2 = await channel_2.create_webhook(name="Translator Bot")
+
             await self.bot.cursor.execute(f"SELECT * FROM linkchannels WHERE channel_id_1 = {channel_1.id} OR channel_id_2 = {channel_1.id} OR channel_id_1 = {channel_2.id} OR channel_id_2 = {channel_2.id}")
             LinkChannelsList = await self.bot.cursor.fetchall()
 
             if LinkChannelsList == []:
 
-                sql = ("INSERT INTO linkchannels(guild_id, channel_id_1, channel_id_2, language_1, language_2) VALUES(?,?,?,?,?)")
-                val = (ctx.guild.id, channel_1.id, channel_2.id, language_1, language_2)
+                sql = ("INSERT INTO linkchannels(guild_id, channel_id_1, channel_id_2, language_1, language_2, webhook_1, webhook_2) VALUES(?,?,?,?,?,?,?)")
+                val = (ctx.guild.id, channel_1.id, channel_2.id, language_1, language_2, webhook_1.url, webhook_2.url)
                 await self.bot.cursor.execute(sql, val)
                 await self.bot.db.commit()
 
@@ -141,8 +141,8 @@ class LinkChannels(Cog):
                 await self.bot.cursor.execute(sql, val)
                 await self.bot.db.commit()
 
-                sql = ("INSERT INTO linkchannels(guild_id, channel_id_1, channel_id_2, language_1, language_2) VALUES(?,?,?,?,?)")
-                val = (ctx.guild.id, channel_1.id, channel_2.id, language_1, language_2)
+                sql = ("INSERT INTO linkchannels(guild_id, channel_id_1, channel_id_2, language_1, language_2, webhook_1, webhook_2) VALUES(?,?,?,?,?,?,?)")
+                val = (ctx.guild.id, channel_1.id, channel_2.id, language_1, language_2, webhook_1.url, webhook_2.url)
                 await self.bot.cursor.execute(sql, val)
                 await self.bot.db.commit()
 
