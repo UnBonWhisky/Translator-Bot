@@ -150,14 +150,9 @@ class Translate(Cog):
                 pass
         
         if len(Traduction.text) > 2000:
-            if ephemeral:
-                await ctx.respond("The translated text is too long to be sent in one message.\nEphemeral message is not available for long text.", ephemeral=ephemeral)
             parts = await self.split_message_into_parts(Traduction.text)
             for x in range(len(parts)):
-                if x == 0 and not ephemeral:
-                    await ctx.respond(parts[x])
-                else :
-                    await ctx.send(parts[x])
+                await ctx.respond(parts[x], ephemeral=ephemeral)
         
         elif len(Traduction.text) == 0:
             await ctx.respond("The translated text is empty.\nI can not translate this.\nIf you think this is not the normal comportment, please open a ticket in the support server", ephemeral=ephemeral)
