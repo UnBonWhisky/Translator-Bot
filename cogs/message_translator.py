@@ -99,7 +99,7 @@ class MessageTranslator(Cog):
         
         return translated_message
     
-    async def compare_messages(self, original_message, translated_message):
+    def compare_messages(self, original_message, translated_message):
         original_normalized = re.sub(r'\s+', '', original_message).lower()
         translated_normalized = re.sub(r'\s+', '', translated_message).lower()
         
@@ -236,8 +236,8 @@ class MessageTranslator(Cog):
                 
                 Traduction.text = await self.is_custom_emoji(message.content, Traduction.text)
 
-                is_same_message_content = await self.compare_messages(message.content, Traduction.text)
-                is_same_message_only = await self.compare_messages(MessageOnly, Traduction.text)
+                is_same_message_content = await self.bot.loop.run_in_executor(None, self.compare_messages, message.content, Traduction.text)
+                is_same_message_only = await self.bot.loop.run_in_executor(None, self.compare_messages, MessageOnly, Traduction.text)
                 if is_same_message_content or is_same_message_only :
                     Traduction.text = message.content
                 
@@ -394,8 +394,8 @@ class MessageTranslator(Cog):
                     temp_lo = await self.bot.trad.detect_legacy(message.content)
                     Traduction.src = temp_lo.lang
 
-            is_same_message_content = await self.compare_messages(message.content, Traduction.text)
-            is_same_message_only = await self.compare_messages(MessageOnly, Traduction.text)
+            is_same_message_content = await self.bot.loop.run_in_executor(None, self.compare_messages, message.content, Traduction.text)
+            is_same_message_only = await self.bot.loop.run_in_executor(None, self.compare_messages, MessageOnly, Traduction.text)
             
             if Traduction.src == DESTINATION : # Si la langue source est la même que la langue de traduction, on ne fait rien
                 await cursor.close()

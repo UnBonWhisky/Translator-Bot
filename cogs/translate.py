@@ -38,6 +38,39 @@ class Translate(Cog):
             parts.append(message)
         return parts
     
+    def automod_rules_check(self, automod_rules, Traduction, author, channel):
+        
+        ban_word = False
+        result = {}
+        
+        for rule in automod_rules:
+            if any(role.id in rule.exempt_role_ids for role in author.roles) or (channel.id in rule.exempt_channel_ids) :
+                continue
+        
+            if (type(rule.trigger_metadata.keyword_filter) == list) and (any(AutoModActionType.block_message == action.type for action in rule.actions)) and (not ban_word) :
+                for keyword in rule.trigger_metadata.keyword_filter :
+                    if fnmatch(Traduction.text, keyword) :
+                        ban_word = True
+
+            if (type(rule.trigger_metadata.regex_patterns) == list) and (not ban_word) :
+                for keyword in rule.trigger_metadata.regex_patterns :
+                    pattern = flpc.compile(keyword)
+                    if flpc.fmatch(pattern, Traduction.text) :
+                        ban_word = True
+
+            if (type(rule.trigger_metadata.allow_list) == list) and (ban_word) :
+                for keyword in rule.trigger_metadata.allow_list :
+                    if fnmatch(Traduction.text, keyword) :
+                        ban_word = False
+                        continue
+            
+            result.append(rule, ban_word)
+        
+        for key, value in result.items() :
+            if value :
+                return key, value
+        
+        return None, False
 
     #############
     # translate #
@@ -101,51 +134,30 @@ class Translate(Cog):
                     raise Exception
                 
                 automod_rules = await ctx.guild.fetch_auto_moderation_rules()
-                ban_word = False
+                rule, ban_word = await self.bot.loop.run_in_executor(None, self.automod_rules_check, automod_rules, Traduction, ctx.author, ctx.channel)
                 
-                for rule in automod_rules:
-                    if any(role.id in rule.exempt_role_ids for role in ctx.author.roles) or (ctx.channel.id in rule.exempt_channel_ids) :
-                        continue
-                
-                    if (type(rule.trigger_metadata.keyword_filter) == list) and (any(AutoModActionType.block_message == action.type for action in rule.actions)) and (not ban_word) :
-                        for keyword in rule.trigger_metadata.keyword_filter :
-                            if fnmatch(Traduction.text, keyword) :
-                                ban_word = True
-                                
-                    if (type(rule.trigger_metadata.regex_patterns) == list) and (not ban_word) :
-                        for keyword in rule.trigger_metadata.regex_patterns :
-                            pattern = flpc.compile(keyword)
-                            if flpc.fmatch(pattern, Traduction.text) :
-                                ban_word = True
-
-                    if (type(rule.trigger_metadata.allow_list) == list) and (ban_word) :
-                        for keyword in rule.trigger_metadata.allow_list :
-                            if fnmatch(Traduction.text, keyword) :
-                                ban_word = False
-                                continue
-                
-                    if ban_word :
-                        await ctx.respond("An automod rule have been set up to ban a word you have in the translation.", ephemeral=ephemeral, delete_after=3 if not ephemeral else None)
-                        
-                        for action in rule.actions :
-                            if AutoModActionType.send_alert_message == action.type :
-                                alert_channel = await self.bot.fetch_channel(action.metadata.channel_id)
-                                
-                                EmbedAlert = Embed(title = rule.name,
-                                    description = f"<@{ctx.author.id}> raised an automod alert when trying to do a translation.",
-                                    color = 0xff0000
-                                )
-                                EmbedOriginal = Embed(title = "Original message",
-                                    description = f"{text}",
-                                    color = 0xff0000
-                                )
-                                EmbedTraduction = Embed(title = "Translated message",
-                                    description = f"{Traduction.text}",
-                                    color = 0xff0000
-                                )
-                                
-                                await alert_channel.send(embeds = [EmbedAlert, EmbedOriginal, EmbedTraduction])
-                        return
+                if ban_word :
+                    await ctx.respond("An automod rule have been set up to ban a word you have in the translation.", ephemeral=ephemeral, delete_after=3 if not ephemeral else None)
+                    
+                    for action in rule.actions :
+                        if AutoModActionType.send_alert_message == action.type :
+                            alert_channel = await self.bot.fetch_channel(action.metadata.channel_id)
+                            
+                            EmbedAlert = Embed(title = rule.name,
+                                description = f"<@{ctx.author.id}> raised an automod alert when trying to do a translation.",
+                                color = 0xff0000
+                            )
+                            EmbedOriginal = Embed(title = "Original message",
+                                description = f"{text}",
+                                color = 0xff0000
+                            )
+                            EmbedTraduction = Embed(title = "Translated message",
+                                description = f"{Traduction.text}",
+                                color = 0xff0000
+                            )
+                            
+                            await alert_channel.send(embeds = [EmbedAlert, EmbedOriginal, EmbedTraduction])
+                    return
             except :
                 pass
         

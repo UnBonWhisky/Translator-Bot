@@ -108,7 +108,7 @@ class Help(Cog):
             inline=True
         )
 
-    def get_pages(self, number=None):
+    async def get_pages(self, number = None):
         if number:
             return self.pages[number]
         else:
@@ -125,9 +125,11 @@ class Help(Cog):
         await ctx.defer(ephemeral=True)
 
         if ctx.author.guild_permissions.administrator:
-            paginator = pages.Paginator(pages=self.get_pages())
+            HelpPage = await self.get_pages()
+            paginator = pages.Paginator(pages=HelpPage)
         else :
-            paginator = pages.Paginator(pages=[self.get_pages(0)])
+            HelpPage = await self.get_pages(number=0)
+            paginator = pages.Paginator(pages=HelpPage)
         
         paginator.remove_button("first")
         paginator.remove_button("last")
