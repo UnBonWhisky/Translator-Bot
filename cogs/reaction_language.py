@@ -1,5 +1,6 @@
 from discord import Embed, errors
 from discord.ext.commands import Cog
+from main import ShardedBot
 
 class ReactionEvent(Cog):
     def __init__(self, bot):
@@ -55,6 +56,7 @@ class ReactionEvent(Cog):
             parts.append(message)
         return parts
 
+    @ShardedBot.translator_handler
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):
 

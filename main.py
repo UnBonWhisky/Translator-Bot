@@ -3,7 +3,8 @@ from discord import Intents
 from discord.ext import tasks
 from dotenv import load_dotenv
 from datetime import datetime
-from googletrans import Translator, LANGUAGES, FLAG_CODES, LANGKEYS, LANGNAMES, LANGCODES
+from googletrans import Translator, LANGUAGES, FLAG_CODES, LANGKEYS, LANGNAMES, LANGCODES, RateLimitError
+from functools import wraps
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,7 +21,6 @@ class ShardedBot(discord.AutoShardedBot):
         self.db = None
         self.cursor = None
         self.trad = None
-        self.setup_translator.start()
         self.LANGUAGES = LANGUAGES
         self.FLAG_CODES = FLAG_CODES
         self.LANG_KEYS = LANGKEYS
@@ -29,6 +29,7 @@ class ShardedBot(discord.AutoShardedBot):
     
     async def start(self, token: str, *, reconnect: bool = True):
         await self.setup_database()
+        await self.setup_translator()
         
         # Load cogs
         for filename in os.listdir('./cogs'):
@@ -46,14 +47,27 @@ class ShardedBot(discord.AutoShardedBot):
         self.cursor = await bot.db.cursor()
         
         await self.create_tables()
-    
-    @tasks.loop(minutes=30)
+
     async def setup_translator(self):
         
         proxy="[PRIVATE]"
         
         self.trad = Translator(proxy=proxy)
         print("=== Proxy Setup updated ! ===")
+        
+    @staticmethod
+    def translator_handler(func):
+        @wraps(func)
+        async def wrapper(self, *args, **kwargs):
+            try:
+                return await func(self, *args, **kwargs)
+            except RateLimitError:
+                await self.setup_translator()
+                try:
+                    return await func(self, *args, **kwargs)
+                except RateLimitError:
+                    raise RateLimitError("Rate limit error even after changing proxy.")
+        return wrapper
         
     async def create_tables(self):
         await self.cursor.execute("""

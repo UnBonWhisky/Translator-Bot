@@ -3,6 +3,7 @@ from discord.ext.commands import Cog
 
 import re, aiohttp
 from difflib import SequenceMatcher
+from main import ShardedBot
 
 # Connexion au service de traduction google translate
 
@@ -110,6 +111,7 @@ class MessageTranslator(Cog):
         ratio = SequenceMatcher(None, original_normalized, translated_normalized).ratio()
         return ratio >= 0.75
 
+    @ShardedBot.translator_handler
     @Cog.listener()
     async def on_message(self, message):
 

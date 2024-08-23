@@ -3,6 +3,7 @@ from discord.ext.commands import Cog
 from googletrans import LANGNAMES
 from fnmatch import fnmatch
 import flpc
+from main import ShardedBot
 
 class Translate(Cog):
     def __init__(self, bot):
@@ -115,6 +116,7 @@ class Translate(Cog):
         required=False,
         type=bool
     )
+    @ShardedBot.translator_handler
     async def translate(self, ctx : ApplicationContext, text, to_language, from_language = 'auto', ephemeral = False):
         
         await ctx.defer(ephemeral=ephemeral)
