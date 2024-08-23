@@ -3,7 +3,8 @@ from discord.ext.commands import Cog
 
 import re, aiohttp
 from difflib import SequenceMatcher
-from main import ShardedBot
+from main import translator_handler
+from googletrans import RateLimitError
 
 # Connexion au service de traduction google translate
 
@@ -111,7 +112,7 @@ class MessageTranslator(Cog):
         ratio = SequenceMatcher(None, original_normalized, translated_normalized).ratio()
         return ratio >= 0.75
 
-    @ShardedBot.translator_handler
+    @translator_handler
     @Cog.listener()
     async def on_message(self, message):
 
@@ -170,6 +171,8 @@ class MessageTranslator(Cog):
             try :
                 temp_lo = await self.bot.trad.detect(message.content)
                 langue_originale = temp_lo.lang
+            except RateLimitError :
+                raise
             except :
                 temp_lo = await self.bot.trad.detect_legacy(message.content)
                 langue_originale = temp_lo.lang
@@ -226,9 +229,13 @@ class MessageTranslator(Cog):
                 
                 try: # On tente de traduire le message
                     Traduction = await self.bot.trad.translate(text = message.content, dest=DESTINATION_LANG)
+                except RateLimitError :
+                    raise
                 except :
                     try:
                         Traduction = await self.bot.trad.translate_to_detect(text = message.content, dest=DESTINATION_LANG)
+                    except RateLimitError :
+                        raise
                     except :
                         await cursor.close()
                         return
@@ -338,6 +345,8 @@ class MessageTranslator(Cog):
             try :
                 temp_lo = await self.bot.trad.detect(message.content)
                 langue_originale = temp_lo.lang
+            except RateLimitError :
+                raise
             except :
                 temp_lo = await self.bot.trad.detect_legacy(message.content)
                 langue_originale = temp_lo.lang
@@ -381,9 +390,13 @@ class MessageTranslator(Cog):
             # On traduit le message
             try :
                 Traduction = await self.bot.trad.translate(text = message.content, dest=DESTINATION)
+            except RateLimitError :
+                raise
             except :
                 try :
                     Traduction = await self.bot.trad.translate_to_detect(text = message.content, dest=DESTINATION)
+                except RateLimitError :
+                    raise
                 except :
                     await cursor.close()
                     return
@@ -392,6 +405,8 @@ class MessageTranslator(Cog):
                 try :
                     temp_lo = await self.bot.trad.detect(message.content)
                     Traduction.src = temp_lo.lang
+                except RateLimitError :
+                    raise
                 except :
                     temp_lo = await self.bot.trad.detect_legacy(message.content)
                     Traduction.src = temp_lo.lang

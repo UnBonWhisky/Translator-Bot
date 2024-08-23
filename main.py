@@ -26,6 +26,7 @@ class ShardedBot(discord.AutoShardedBot):
         self.LANG_KEYS = LANGKEYS
         self.LANG_NAMES = LANGNAMES
         self.LANGCODES = LANGCODES
+        self.old_proxy = ""
     
     async def start(self, token: str, *, reconnect: bool = True):
         await self.setup_database()
@@ -49,25 +50,10 @@ class ShardedBot(discord.AutoShardedBot):
         await self.create_tables()
 
     async def setup_translator(self):
-        
         proxy="[PRIVATE]"
         
         self.trad = Translator(proxy=proxy)
-        print("=== Proxy Setup updated ! ===")
-        
-    @staticmethod
-    def translator_handler(func):
-        @wraps(func)
-        async def wrapper(self, *args, **kwargs):
-            try:
-                return await func(self, *args, **kwargs)
-            except RateLimitError:
-                await self.setup_translator()
-                try:
-                    return await func(self, *args, **kwargs)
-                except RateLimitError:
-                    raise RateLimitError("Rate limit error even after changing proxy.")
-        return wrapper
+        print(f"=== Proxy Setup updated ! ===")
         
     async def create_tables(self):
         await self.cursor.execute("""
@@ -137,6 +123,19 @@ class ShardedBot(discord.AutoShardedBot):
 intents = Intents(guilds=True, messages=True, reactions=True, message_content=True, voice_states=True)
 bot = ShardedBot(intents=intents, activity=discord.Game(name="/ translations"), owner_id=341257685901246466)
 bot.start_time = datetime.now()
+
+def translator_handler(func):
+    @wraps(func)
+    async def wrapper(self, *args, **kwargs):
+        try:
+            return await func(self, *args, **kwargs)
+        except RateLimitError:
+            await self.bot.setup_translator()
+            try:
+                return await func(self, *args, **kwargs)
+            except RateLimitError:
+                raise RateLimitError("Rate limit error even after changing proxy.")
+    return wrapper
 
 # On guild join
 @bot.event

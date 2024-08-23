@@ -1,6 +1,7 @@
 from discord import Embed, errors
 from discord.ext.commands import Cog
-from main import ShardedBot
+from main import translator_handler
+from googletrans import RateLimitError
 
 class ReactionEvent(Cog):
     def __init__(self, bot):
@@ -56,7 +57,7 @@ class ReactionEvent(Cog):
             parts.append(message)
         return parts
 
-    @ShardedBot.translator_handler
+    @translator_handler
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):
 
@@ -122,9 +123,13 @@ class ReactionEvent(Cog):
 
             try :
                 Traduction = await self.bot.trad.translate(text = TranslateMessage.content, dest=source)
+            except RateLimitError :
+                raise
             except :
                 try :
                     Traduction = await self.bot.trad.translate_to_detect(text = TranslateMessage.content, dest=source)
+                except RateLimitError :
+                    raise
                 except :
                     await cursor.close()
                     return
@@ -133,6 +138,8 @@ class ReactionEvent(Cog):
                 try :
                     temp_lo = await self.bot.trad.detect(TranslateMessage.content)
                     langue_originale = temp_lo.lang
+                except RateLimitError :
+                    raise
                 except :
                     temp_lo = await self.bot.trad.detect_legacy(TranslateMessage.content)
                     langue_originale = temp_lo.lang

@@ -1,9 +1,9 @@
 from discord import slash_command, ApplicationContext, AutocompleteContext, option, AutoModActionType, Embed, InteractionContextType, IntegrationType
 from discord.ext.commands import Cog
-from googletrans import LANGNAMES
+from googletrans import LANGNAMES, RateLimitError
 from fnmatch import fnmatch
 import flpc
-from main import ShardedBot
+from main import translator_handler
 
 class Translate(Cog):
     def __init__(self, bot):
@@ -72,6 +72,7 @@ class Translate(Cog):
                 return key, value
         
         return None, False
+        
 
     #############
     # translate #
@@ -116,16 +117,20 @@ class Translate(Cog):
         required=False,
         type=bool
     )
-    @ShardedBot.translator_handler
+    @translator_handler
     async def translate(self, ctx : ApplicationContext, text, to_language, from_language = 'auto', ephemeral = False):
         
         await ctx.defer(ephemeral=ephemeral)
         
         try :
             Traduction = await self.bot.trad.translate(text, dest=to_language, src=from_language)
+        except RateLimitError :
+            raise
         except :
             try :
                 Traduction = await self.bot.trad.translate_to_detect(text, dest=to_language, src=from_language)
+            except RateLimitError :
+                raise
             except :
                 await ctx.respond("An error occured while translating the text.\nPlease try again.", ephemeral=ephemeral, delete_after=3 if not ephemeral else None)
                 return
