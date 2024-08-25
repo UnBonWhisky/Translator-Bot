@@ -40,6 +40,7 @@ class MessageCommands(Cog):
     )
     @translator_handler
     async def translate_to_english(self, ctx: ApplicationContext, message: discord.Message):
+        await ctx.defer(ephemeral=True)
         try :
             trad = await self.bot.trad.translate(message.content, dest='en', src='auto')
         except RateLimitError :
@@ -50,7 +51,7 @@ class MessageCommands(Cog):
             except RateLimitError :
                 raise
             except :
-                await ctx.respond("An error occurred.")
+                await ctx.respond("An error occurred.", ephemeral=True)
                 return
             
         if len(trad.text) > 2000:
@@ -74,6 +75,7 @@ class MessageCommands(Cog):
     )
     @translator_handler
     async def translate_to_french(self, ctx: ApplicationContext, message: discord.Message):
+        await ctx.defer(ephemeral=True)
         try :
             trad = await self.bot.trad.translate(message.content, dest='fr', src='auto')
         except RateLimitError :
@@ -84,7 +86,7 @@ class MessageCommands(Cog):
             except RateLimitError :
                 raise
             except :
-                await ctx.respond("An error occurred.")
+                await ctx.respond("An error occurred.", ephemeral=True)
                 return
         
         if len(trad.text) > 2000:
@@ -108,6 +110,7 @@ class MessageCommands(Cog):
     )
     @translator_handler
     async def translate_to_russian(self, ctx: ApplicationContext, message: discord.Message):
+        await ctx.defer(ephemeral=True)
         try :
             trad = await self.bot.trad.translate(message.content, dest='ru', src='auto')
         except RateLimitError :
@@ -118,7 +121,7 @@ class MessageCommands(Cog):
             except RateLimitError :
                 raise
             except :
-                await ctx.respond("An error occurred.")
+                await ctx.respond("An error occurred.", ephemeral=True)
                 return
         
         if len(trad.text) > 2000:
@@ -141,33 +144,36 @@ class MessageCommands(Cog):
     )
     @translator_handler
     async def translate(self, ctx: ApplicationContext, message: discord.Message):
+        await ctx.defer(ephemeral=True)
+        
+        cursor = await self.bot.db.cursor()
+        
+        await cursor.execute(f"SELECT language FROM personal_language WHERE user_id = {ctx.author.id}")
+        result = await cursor.fetchone()
+        if result is not None:
+            result = result[0]
+        else :
+            result = ctx.interaction.locale
+        
         try :
-            trad = await self.bot.trad.translate(message.content, dest=ctx.interaction.locale, src='auto')
+            trad = await self.bot.trad.translate(message.content, dest=result, src='auto')
         except RateLimitError :
             raise
         except :
             try :
-                trad = await self.bot.trad.translate_to_detect(message.content, dest=ctx.interaction.locale, src='auto')
+                trad = await self.bot.trad.translate_to_detect(message.content, dest=result, src='auto')
             except RateLimitError :
                 raise
             except :
-                await ctx.respond("An error occurred.")
+                await ctx.respond("An error occurred.", ephemeral=True)
                 return
-        
-        EmbedMessage = Embed(
-            title = "Translation to your language",
-            description = f"Actually, I am doing the translation based on your discord client language setting.\nIt will be possible to change it manually in the future.",
-            color = 0x5865F2
-        )
+
         if len(trad.text) > 2000:
             parts = await self.split_message_into_parts(trad.text)
             for part in parts:
-                if part == parts[-1]:
-                    await ctx.respond(f"{part}", embed=EmbedMessage, ephemeral=True)
-                else :
-                    await ctx.respond(f"{part}", ephemeral=True)
+                await ctx.respond(f"{part}", ephemeral=True)
         else :
-            await ctx.respond(f"{trad.text}", embed=EmbedMessage, ephemeral=True)
+            await ctx.respond(f"{trad.text}", ephemeral=True)
 
 def setup(bot):
     print("Message Commands are ready !")

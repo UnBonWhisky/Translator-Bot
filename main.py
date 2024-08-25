@@ -109,6 +109,12 @@ class ShardedBot(discord.AutoShardedBot):
             info TEXT
             )
         """)
+        await self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS personal_language(
+            user_id TEXT,
+            language TEXT
+            )
+        """)
         print('=== Database Tables are created ! ===')
         
     
