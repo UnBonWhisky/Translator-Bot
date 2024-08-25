@@ -1,7 +1,6 @@
 from discord import slash_command, ApplicationContext, AutocompleteContext, option, Embed, InteractionContextType, IntegrationType
 from discord.ext.commands import Cog
 from googletrans import LANGNAMES
-from main import translator_handler
 
 LANGUAGES = list(LANGNAMES) # Pour créer une copie de la liste
 if 'none' not in LANGUAGES:
@@ -38,7 +37,6 @@ class PersonalCommand(Cog):
         type=str,
         autocomplete=get_languages
     )
-    @translator_handler
     async def personal(self, ctx : ApplicationContext, language):
         await ctx.defer(ephemeral=True)
         
