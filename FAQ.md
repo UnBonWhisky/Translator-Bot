@@ -54,3 +54,9 @@ The `/allowflag` command provide some options you can use to edit the comportmen
 ## Is it possible to have the translation of a message but in another channel ?
 
 Sure you can ! As of August 7th 2024, the `/linkchannels` command have been added to the bot
+
+## Is it possible to have more than 2 `/linkchannels` ?
+
+Actually no, because of the API I am using and for stability for all the users, I do not provide this configuration.
+I limit the bot so that it only uses a message in one language as input, and a message in another language as output. No more.
+It is a highly requested feature that can be implemented in the future, but I can not provide any ETA about it
