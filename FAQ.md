@@ -47,6 +47,9 @@ Example :
 
 If you are sending a message and want to send it already translated, you can use the `/translate` command.
 
+As of August 24th 2024, you can now use the "Apps" context menu to get a translation into your language. This one works in DM's too.
+The `/personal` command let you change the output language for the **Translate** Apps command.
+
 ## How do I remove the 4 embeds that are printed when I am using flag reactions ?
 
 The `/allowflag` command provide some options you can use to edit the comportment of the bot like sending minimalist messages or to set a timeout on after a flag reaction message.
@@ -57,6 +60,6 @@ Sure you can ! As of August 7th 2024, the `/linkchannels` command have been adde
 
 ## Is it possible to have more than 2 `/linkchannels` ?
 
-Actually no, because of the API I am using and for stability for all the users, I do not provide this configuration.
-I limit the bot so that it only uses a message in one language as input, and a message in another language as output. No more.
+Actually no, because of the API I am using and for stability for all the users, I do not provide this configuration.  
+I limit the bot so that it only uses a message in one language as input, and a message in another language as output. No more.  
 It is a highly requested feature that can be implemented in the future, but I can not provide any ETA about it
