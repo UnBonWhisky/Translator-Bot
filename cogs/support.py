@@ -28,6 +28,9 @@ class SupportCommand(Cog):
                                         description = "Your request has been sent. Check your discord friend invitations.\nThe bot owner will add you as friend if he need it !\nGo check on the [bot owner server](https://discord.gg/gqfFqJp) to know when your support help is done !",
                                         color = 0x00ff00
                                         )
+        EmbedMessageSent.add_field(name = "⚠️Important information⚠️",
+                                value = f"If your message is not precise, it will be ignored.\nAdditionally, if your message concerns a question that is in the FAQ, no feedback will be returned to you.\nFAQ : [here](https://github.com/UnBonWhisky/Translator-Bot/blob/main/FAQ.md)",
+                                inline = False)
         EmbedMessageSent.add_field(name = "Your message :",
                                 value = f"{message}",
                                 inline = False)
