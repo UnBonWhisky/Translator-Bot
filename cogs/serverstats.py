@@ -1,4 +1,4 @@
-from discord import slash_command, ApplicationContext, Embed, InteractionContextType
+from discord import slash_command, ApplicationContext, Embed, InteractionContextType, default_permissions
 from discord.ext.commands import Cog
 
 class ServerStats(Cog):
@@ -10,6 +10,7 @@ class ServerStats(Cog):
         description="Prints all configured informations on the server",
         contexts={InteractionContextType.guild}
     )
+    @default_permissions(administrator=True)
     async def serverstats(self, ctx: ApplicationContext):
         
         await ctx.defer(ephemeral=True)

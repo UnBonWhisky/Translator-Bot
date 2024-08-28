@@ -1,4 +1,4 @@
-from discord import Embed, option, ApplicationContext, InteractionContextType
+from discord import Embed, option, ApplicationContext, InteractionContextType, default_permissions
 from discord.ext.commands import slash_command, Cog
 
 class LangInfo(Cog):
@@ -16,6 +16,7 @@ class LangInfo(Cog):
         required=True,
         type=bool
     )
+    @default_permissions(administrator=True)
     async def langinfo(self, ctx: ApplicationContext, enabled):
         
         await ctx.defer(ephemeral=True)
