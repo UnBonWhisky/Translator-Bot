@@ -9,6 +9,41 @@ class MessageCommands(Cog):
     def __init__(self, bot):
         self.bot = bot
         
+        self.locales = {
+            "id": "id",
+            "da": "da",
+            "de": "de",
+            "en-GB": "en",
+            "en-US": "en",
+            "es-ES": "es",
+            "es-419": "es",
+            "fr": "fr",
+            "hr": "hr",
+            "it": "it",
+            "lt": "lt",
+            "hu": "hu",
+            "nl": "nl",
+            "no": "no",
+            "pl": "pl",
+            "pt-BR": "pt",
+            "ro": "ro",
+            "fi": "fi",
+            "sv-SE": "sv",
+            "vi": "vi",
+            "tr" : "tr",
+            "cs": "cs",
+            "el": "el",
+            "bg": "bg",
+            "ru": "ru",
+            "uk": "uk",
+            "hi": "hi",
+            "th": "th",
+            "zh-CN": "zh-CN",
+            "ja": "ja",
+            "zh-TW": "zh-TW",
+            "ko": "ko",
+        }
+        
     async def split_message_into_parts(self, message, max_length=2000):
         parts = []
         while len(message) > max_length:
@@ -58,6 +93,8 @@ class MessageCommands(Cog):
             parts = await self.split_message_into_parts(trad.text)
             for part in parts:
                 await ctx.respond(f"{part}", ephemeral=True)
+        elif len(trad.text) == 0:
+            await ctx.respond("The message does not contain text. If you think this is an error, you can join the [support server](https://discord.gg/gqfFqJp) and explain your problem.", ephemeral=True)
         else :
             await ctx.respond(f"{trad.text}", ephemeral=True)
     
@@ -93,6 +130,8 @@ class MessageCommands(Cog):
             parts = await self.split_message_into_parts(trad.text)
             for part in parts:
                 await ctx.respond(f"{part}", ephemeral=True)
+        elif len(trad.text) == 0:
+            await ctx.respond("The message does not contain text. If you think this is an error, you can join the [support server](https://discord.gg/gqfFqJp) and explain your problem.", ephemeral=True)
         else :
             await ctx.respond(f"{trad.text}", ephemeral=True)
         
@@ -128,6 +167,8 @@ class MessageCommands(Cog):
             parts = await self.split_message_into_parts(trad.text)
             for part in parts:
                 await ctx.respond(f"{part}", ephemeral=True)
+        elif len(trad.text) == 0:
+            await ctx.respond("The message does not contain text. If you think this is an error, you can join the [support server](https://discord.gg/gqfFqJp) and explain your problem.", ephemeral=True)
         else :
             await ctx.respond(f"{trad.text}", ephemeral=True)
     
@@ -153,7 +194,7 @@ class MessageCommands(Cog):
         if result is not None:
             result = result[0]
         else :
-            result = ctx.interaction.locale
+            result = self.locales[ctx.interaction.locale]
         
         try :
             trad = await self.bot.trad.translate(message.content, dest=result, src='auto')
@@ -172,6 +213,8 @@ class MessageCommands(Cog):
             parts = await self.split_message_into_parts(trad.text)
             for part in parts:
                 await ctx.respond(f"{part}", ephemeral=True)
+        elif len(trad.text) == 0:
+            await ctx.respond("The message does not contain text. If you think this is an error, you can join the [support server](https://discord.gg/gqfFqJp) and explain your problem.", ephemeral=True)
         else :
             await ctx.respond(f"{trad.text}", ephemeral=True)
 
