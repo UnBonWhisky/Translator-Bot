@@ -28,6 +28,7 @@ By using this bot, you agree to all of the rules above. In case of non-complianc
 * By typing a command from your bot, you accept that the bot collects your discord user ID and the server ID.
 * By using this bot, you accept that the bot owner adds you as friend or sends you a message if we think it is a necessary case.
 * In case of you want to reset your datas, you have to send a screenshot of your "user profile" page, and your user ID.
+* All the messages sent where the bot can read your messages are sent to Google Translate to detect and translate the messages. More informations about how the datas are sent are [available here](https://github.com/UnBonWhisky/googletrans)
 
 ---
 
