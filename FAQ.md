@@ -1,6 +1,8 @@
 # FAQ - Translator Bot
 
-Here you will find some informations about how `Translator Bot` works, and answers to the most frequently asked questions.
+Here you will find some informations about how `Translator Bot` works, and answers to the most frequently asked questions.  
+
+This FAQ is up to date, the code is not because I have launched the premium.
 
 ## How do I set up auto translations on the bot ?
 
@@ -60,6 +62,8 @@ Sure you can ! As of August 7th 2024, the `/linkchannels` command have been adde
 
 ## Is it possible to have more than 2 `/linkchannels` ?
 
-Actually no, because of the API I am using and for stability for all the users, I do not provide this configuration.  
-I limit the bot so that it only uses a message in one language as input, and a message in another language as output. No more.  
-It is a highly requested feature that can be implemented in the future, but I can not provide any ETA about it
+Yes ! It is possible as of November 23rd 2024, the update allows you to use more than 2 channels in the premium linkchannels  
+
+## Is it possible to send the flag reactions to a specific channel ?
+
+Yes ! When purchasing the premium subscription, you are able to configure the `output_channel` argument of the `/allowflag` command to send the flag reaction translations to a specific channel
