@@ -19,7 +19,7 @@ If you hope this bot, you can join me on one of these platforms :
 * No insults, whether in DM, in the support command or in the support server will be allowed.
 * Respect ToS of Discord and Github, depending on the platform used to communicate.
 
-By using this bot, you agree to all of the rules above. In case of non-compliance with these rules, it is our right to ban you from using the bot, or banning you from using the server in an entire server.
+By using this bot, you agree to all of the rules above. In case of non-compliance with these rules, it is our right to ban you from using the bot, or banning you from using the bot in an entire server.
 
 ---
 
